@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -10,11 +10,30 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+//Принимаем сообщение от рендера
+ipcMain.on('message', (event, data) => {
+  console.log(data);
+
+  if (data.command === 'checkNumbers') {
+    for (let number of data.numbers) {
+      console.log(number);
+      if (mainWindow !== null) {
+        mainWindow.webContents.send('message', number); // отправляем сообщение в рендер
+      }
+    }
+  }
+
+
+});
+
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   // and load the index.html of the app.

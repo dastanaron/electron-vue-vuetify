@@ -56,7 +56,19 @@
 </template>
 
 <script>
+    import { ipcRenderer } from 'electron';
     export default {
-        name: 'main-vue'
+        name: 'main-vue',
+        mounted() {
+            ipcRenderer.send('message', {
+                command: 'checkNumbers',
+                numbers: [
+                    '79132343454',
+                ],
+            }); //отправляем сообщение в main
+            ipcRenderer.on('message', (event, data) => {
+                console.log(data); //Слушаем сообщение от main
+            });
+        }
     }
 </script>
